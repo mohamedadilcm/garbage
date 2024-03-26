@@ -4,12 +4,14 @@ from django.views.generic import TemplateView,View
 from django.contrib import messages
 from my_work.models import GarbageBin,CollectionRequest,Area
 from my_work.models import *
+
+from .form import DriverCollectionreqForm
 # Create your views here.
 
 
 class HomePage(TemplateView):
     template_name="driver/home.html"
-
+    
 
 
 
@@ -50,3 +52,18 @@ class AcceptRejectRequestView(View):
 def AcceptedUserListView(request):
     accepted_requests = CollectionRequest.objects.filter(status='accepted')
     return render(request, 'registration/accepted.html', {'accepted': accepted_requests})
+
+
+
+class DriverCollectionreqView(View):
+    def get(self,request,*args,**kwargs):
+        form=DriverCollectionreqForm()
+        return render(request,"driver/status.html",{"form":form})
+    
+    def post(self,request,*args,**kwargs):
+        form=DriverCollectionreqForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("home_3")
+        else:
+            return render(request,"driver/status.html",{"form":form})
